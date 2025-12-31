@@ -17,6 +17,7 @@ import { StateComponent } from './admin/state/state.component';
 import { CityComponent } from './admin/city/city.component';
 import { ChangePasswordComponent } from './admin/change-password/change-password.component';
 import { CompanyComponent } from './admin/company/company.component';
+import { ManageClientComponent } from './admin/manage-client/manage-client.component';
 
 const routes: Routes = [
   { path: '', redirectTo: "/admin-login", pathMatch: 'full' },
@@ -38,6 +39,7 @@ const routes: Routes = [
       { path: 'city', component: CityComponent },
       { path: 'change-password', component: ChangePasswordComponent },
       { path: 'company', component: CompanyComponent },
+      { path: 'manage-client', component: ManageClientComponent},
     ]
   },
   { path: 'page-not-found', component: PageNotFoundComponent },

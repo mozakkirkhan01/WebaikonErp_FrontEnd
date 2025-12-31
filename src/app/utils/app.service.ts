@@ -238,4 +238,15 @@ export class AppService {
   deleteCity(obj: any) {
     return this.http.post(this.apiUrl + "City/deleteCity", obj, { headers: this.headers })
   }
+  
+  //Cleint
+  saveClient(obj: any) {
+    return this.http.post(this.apiUrl + "Client/saveClient", obj, { headers: this.headers })
+  }
+  ClientList(obj: any) {
+    return this.http.post(this.apiUrl + "Client/ClientList", obj, { headers: this.headers })
+  }
+  deleteClient(obj: any) {
+    return this.http.post(this.apiUrl + "Client/deleteClient", obj, { headers: this.headers })
+  }
 }
