@@ -1,0 +1,240 @@
+<app-progress *ngIf="dataLoading"></app-progress>
+<main id="main" class="main" *ngIf="action.ResponseReceived">
+
+    <div class="row">
+        <div class="pagetitle dashboard col-sm-8">
+            <h1>{{action.MenuTitle}}</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
+                    <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
+                    <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <button mat-raised-button color="primary" *ngIf="action.CanCreate" class="float-right"
+                data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="resetForm()">New Client</button>
+        </div>
+    </div>
+
+    <section class="section dashboard">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-container overflow-auto">
+                    <div class="dataTable-top">
+                        <div class="dataTable-dropdown d-flex">
+                            <select class="dataTable-selector form-select form-select-sm" [(ngModel)]="itemPerPage">
+                                <option *ngFor="let option of PageSize" [value]="option">{{option}} </option>
+                            </select>
+                            <span class="ms-2">Entries per page</span>
+                        </div>
+                        <div class="dataTable-search">
+                            <input class="dataTable-input form-control form-control-sm" [(ngModel)]="Search"
+                                placeholder="Search..." type="text">
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th style="cursor:pointer;" (click)="sort('ClientCompanyName')">Company Name</th>
+                                <th style="cursor:pointer;" (click)="sort('ContactPersonName')">Person Name</th>
+                                <th style="cursor:pointer;" (click)="sort('MobileNo')">Mobile No</th>
+                                <th style="cursor:pointer;" (click)="sort('AlternateMobileNo')">Alternate No</th>
+                                <th style="cursor:pointer;" (click)="sort('Email')">Email</th>
+                                <th style="cursor:pointer;" (click)="sort('GSTNo')">GST No</th>
+                                <th style="cursor:pointer;" (click)="sort('ClientFullAddress')">Full Address</th>
+                                <th style="cursor:pointer;" (click)="sort('StateId')">State</th>
+                                <th *ngIf="action.CanEdit">Edit</th>
+                                <th *ngIf="action.CanDelete">Delete</th>
+                                <th style="cursor:pointer;" (click)="sort('Status')">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let item of clientList |filter:Search|orderBy:sortKey:reverse|paginate: { itemsPerPage: itemPerPage, currentPage: p } ; ; let i = index;">
+                                <td>{{(itemPerPage * (p -1)) +i+ 1}}</td>
+                                <td>{{item.ClientCompanyName}}</td>
+                                <td>{{item.ContactPersonName}}</td>
+                                <td>{{item.MobileNo}}</td>
+                                <td>{{item.AlternateMobileNo}}</td>
+                                <td>{{item.Email}}</td>
+                                <td>{{item.GSTNo}}</td>
+                                <td>{{item.ClientFullAddress}}</td>
+                                <td>{{item.StateName}}</td>
+                                <td *ngIf="action.CanEdit">
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                    data-bs-target="#staticBackdrop" (click)="editClient(item)" >
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                            </td>
+                            <td *ngIf="action.CanDelete">
+                                <button class="btn btn-sm btn-danger" (click)="deleteClient(item)" >
+                                    <!-- (click)="deleteClient(item)" -->
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <span class="p-1"
+                                    [ngClass]="item.Status == 1 ? 'badge text-bg-success':'badge text-bg-danger'">
+                                    {{AllStatusList[item.Status]}}
+                                </span>
+                            </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="dataTable-bottom">
+                        <pagination-controls (pageChange)="onTableDataChange($event)" style="float:right;"
+                            class="my-pagination"></pagination-controls>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <div class="modal fade" *ngIf="action.CanEdit || action.CanCreate" id="staticBackdrop" data-bs-backdrop="static"
+        data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">{{Client.ClientId > 0
+                        ?'Update':'New'}} Client
+                    </h1>
+                    <button type=" button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="resetForm()"></button>
+                </div>
+                <div class="modal-body">
+
+                    <form #formClient="ngForm" class="d-flex justify-content-evenly flex-wrap">
+                        <div class="container">
+                            <div class="row">
+                                <!-- ClientCompanyName -->
+                                <mat-form-field appearance="outline" class="col-sm-12">
+                                    <mat-label>Client Company Name</mat-label>
+                                    <input matInput #ClientCompanyName="ngModel" name="ClientCompanyName"
+                                        [(ngModel)]="Client.ClientCompanyName" required autofocus>
+                                    <mat-error>
+                                        Client Company Name is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <!-- ContactPersonName -->
+                                <mat-form-field appearance="outline" class="col-sm-12">
+                                    <mat-label>Contact Person Name</mat-label>
+                                    <input matInput #ContactPersonName="ngModel" name="ContactPersonName"
+                                        [(ngModel)]="Client.ContactPersonName" required autofocus>
+                                    <mat-error>
+                                        Contact Person Name is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <!-- MobileNo -->
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Mobile No</mat-label>
+                                    <input type="number" matInput #MobileNo="ngModel" name="MobileNo"
+                                        [(ngModel)]="Client.MobileNo">
+                                    <mat-error>
+                                        required !!
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <!-- AlternateMobileNo -->
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Alternate Mobile No</mat-label>
+                                    <input matInput #AlternateMobileNo="ngModel" name="AlternateMobileNo"
+                                        [(ngModel)]="Client.AlternateMobileNo"  autofocus>
+                                    <mat-error>
+                                        Alternate Mobile No is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <!-- GSTNo -->
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>GST No</mat-label>
+                                    <input matInput #GSTNo="ngModel" name="GSTNo" [(ngModel)]="Client.GSTNo" 
+                                        autofocus>
+                                    <!-- <mat-error>
+                                        GST No is <strong>required</strong>
+                                    </mat-error> -->
+                                </mat-form-field>
+
+                                <!-- Email -->
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Email</mat-label>
+                                    <input matInput #Email="ngModel" name="Email" [(ngModel)]="Client.Email" required
+                                        autofocus>
+                                    <mat-error>
+                                        Email is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+
+                                <!-- ClientFullAddress -->
+                                <mat-form-field appearance="outline" class="col-sm-12">
+                                    <mat-label>Client Full Address</mat-label>
+                                    <input matInput #ClientFullAddress="ngModel" name="ClientFullAddress"
+                                        [(ngModel)]="Client.ClientFullAddress" required autofocus>
+                                    <mat-error>
+                                        Client Full Address is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+
+                                <!-- State -->
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>State</mat-label>
+
+                                    <mat-select name="State" [(ngModel)]="Client.StateId" #State="ngModel"
+                                        (selectionChange)="onStateSelected($event.value)" required>
+                                        <mat-option *ngFor="let state of StateList" [value]="state.StateId">
+                                            {{ state.StateName }}
+                                        </mat-option>
+                                    </mat-select>
+
+                                    <mat-error *ngIf="State.invalid && State.touched">
+                                        State is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+
+
+                                <!-- state code -->
+                                <mat-form-field appearance="outline" class="col-sm-4">
+                                    <mat-label>State Code</mat-label>
+                                    <input type="number" matInput name="StateCode" [(ngModel)]="Client.StateCode"
+                                        readonly>
+                                </mat-form-field>
+
+
+                                <!-- status -->
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Status</mat-label>
+                                    <mat-select #Status="ngModel" name="Status" [(ngModel)]="Client.Status" required>
+                                        <mat-option [value]="status.Key"
+                                            *ngFor="let status of StatusList">{{status.Value}}</mat-option>
+                                    </mat-select>
+                                    <mat-error>
+                                        Status is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" mat-raised-button color="warn" class="me-2" data-bs-dismiss="modal"
+                        (click)="resetForm()">Cancel</button>
+                        
+                    <button mat-raised-button color="primary" (click)="saveClient()">{{Client.ClientId >
+                        0 ? 'Update':'Submit'}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
