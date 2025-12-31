@@ -238,7 +238,7 @@ export class AppService {
   deleteCity(obj: any) {
     return this.http.post(this.apiUrl + "City/deleteCity", obj, { headers: this.headers })
   }
-  
+
   //Cleint
   saveClient(obj: any) {
     return this.http.post(this.apiUrl + "Client/saveClient", obj, { headers: this.headers })
@@ -249,4 +249,19 @@ export class AppService {
   deleteClient(obj: any) {
     return this.http.post(this.apiUrl + "Client/deleteClient", obj, { headers: this.headers })
   }
+  
+  //Project
+  
+  saveProject(obj: any) {
+    return this.http.post(this.apiUrl + "Project/saveProject", obj, { headers: this.headers })
+  }
+  ProjectList(obj: any) {
+    return this.http.post(this.apiUrl + "Project/ProjectList", obj, { headers: this.headers })
+  }
+  deleteProject(obj: any) {
+    return this.http.post(this.apiUrl + "Project/deleteProject", obj, { headers: this.headers })
+  }
+
+
+
 }
