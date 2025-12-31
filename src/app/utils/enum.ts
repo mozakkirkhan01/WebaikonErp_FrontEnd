@@ -89,3 +89,8 @@ export enum DocType {
     Excel = 3,
     Print = 4,
 }
+export enum RenewalStatus {
+    Pending = 1,
+    Confirm = 2,
+    Cancelled = 3,
+}
