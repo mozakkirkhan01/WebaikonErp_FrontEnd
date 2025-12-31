@@ -38,6 +38,7 @@
                             <tr>
                                 <th>S.No</th>
                                 <th (click)="sort('StateName')">State</th>
+                                <th (click)="sort('StateCode')">State Code</th>
                                 <th (click)="sort('Status')">Status</th>
                                 <th *ngIf="action.CanEdit">Edit</th>
                                 <th *ngIf="action.CanDelete">Delete</th>
@@ -48,6 +49,7 @@
                                 *ngFor="let item of StateList |filter:Search|orderBy:sortKey:reverse|paginate: { itemsPerPage: itemPerPage, currentPage: p } ; ; let i = index;">
                                 <td>{{(itemPerPage * (p -1)) +i+ 1}}</td>
                                 <td>{{item.StateName}}</td>
+                                <td>{{item.StateCode}}</td>
                                 <td>
                                     <span class="p-1"
                                         [ngClass]="item.Status == 1 ? 'badge text-bg-success':'badge text-bg-danger'">
