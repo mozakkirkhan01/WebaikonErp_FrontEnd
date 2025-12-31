@@ -18,6 +18,7 @@ import { CityComponent } from './admin/city/city.component';
 import { ChangePasswordComponent } from './admin/change-password/change-password.component';
 import { CompanyComponent } from './admin/company/company.component';
 import { ManageClientComponent } from './admin/manage-client/manage-client.component';
+import { ProjectTypeComponent } from './admin/project-type/project-type.component';
 
 const routes: Routes = [
   { path: '', redirectTo: "/admin-login", pathMatch: 'full' },
@@ -40,6 +41,7 @@ const routes: Routes = [
       { path: 'change-password', component: ChangePasswordComponent },
       { path: 'company', component: CompanyComponent },
       { path: 'manage-client', component: ManageClientComponent},
+      { path: 'project-type', component: ProjectTypeComponent},
     ]
   },
   { path: 'page-not-found', component: PageNotFoundComponent },
