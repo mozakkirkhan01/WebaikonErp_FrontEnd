@@ -72,8 +72,6 @@ export class ProjectTypeComponent {
       this.Project.Status = 1;
   
       this.isSubmitted = false;
-      // this.ProjectList();
-      
     }
   
     resetFormEdit() {
