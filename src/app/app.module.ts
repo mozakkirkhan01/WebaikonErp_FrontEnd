@@ -39,6 +39,7 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } f
 import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker';
 import { ManageClientComponent } from './admin/manage-client/manage-client.component';
 import { ProjectTypeComponent } from './admin/project-type/project-type.component';
+import { ClientPaymentComponent } from './admin/client-payment/client-payment.component';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { ProjectTypeComponent } from './admin/project-type/project-type.componen
     CompanyComponent,
     ManageClientComponent,
     ProjectTypeComponent,
+    ClientPaymentComponent,
   ],
   imports: [
     BrowserModule,
