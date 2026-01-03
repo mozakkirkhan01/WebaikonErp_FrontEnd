@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { ConstantData } from './constant-data';
+import { RequestModel } from './interface';
 
 @Injectable({
   providedIn: 'root'
@@ -249,10 +250,22 @@ export class AppService {
   deleteClient(obj: any) {
     return this.http.post(this.apiUrl + "Client/deleteClient", obj, { headers: this.headers })
   }
+
+
+  //Cleint-Payment
+  saveClientPayment(obj: any) {
+    return this.http.post(this.apiUrl + "ClientPayment/saveClientPayment", obj, { headers: this.headers })
+  }
+  ClientPaymentList(obj: any) {
+    return this.http.post(this.apiUrl + "ClientPayment/ClientPaymentList", obj, { headers: this.headers })
+  }
+  deleteClientPayment(obj: any) {
+    return this.http.post(this.apiUrl + "ClientPayment/deleteClientPayment", obj, { headers: this.headers })
+  }
+  
   
   //Project
-  
-  saveProject(obj: any) {
+    saveProject(obj: any) {
     return this.http.post(this.apiUrl + "Project/saveProject", obj, { headers: this.headers })
   }
   ProjectList(obj: any) {
