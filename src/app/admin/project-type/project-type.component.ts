@@ -200,6 +200,5 @@ export class ProjectTypeComponent {
       this.resetForm()
       this.Project = obj
     }
-  
 
 }
