@@ -41,6 +41,7 @@ import { ManageClientComponent } from './admin/manage-client/manage-client.compo
 import { ProjectTypeComponent } from './admin/project-type/project-type.component';
 import { ClientPaymentComponent } from './admin/client-payment/client-payment.component';
 import { ExpenseHeadComponent } from './admin/expense-head/expense-head.component';
+import { ExpenseComponent } from './admin/expense/expense.component';
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { ExpenseHeadComponent } from './admin/expense-head/expense-head.componen
     ProjectTypeComponent,
     ClientPaymentComponent,
     ExpenseHeadComponent,
+    ExpenseComponent,
   ],
   imports: [
     BrowserModule,

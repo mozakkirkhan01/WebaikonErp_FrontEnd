@@ -20,6 +20,8 @@ import { CompanyComponent } from './admin/company/company.component';
 import { ManageClientComponent } from './admin/manage-client/manage-client.component';
 import { ProjectTypeComponent } from './admin/project-type/project-type.component';
 import { ClientPaymentComponent } from './admin/client-payment/client-payment.component';
+import { ExpenseHeadComponent } from './admin/expense-head/expense-head.component';
+import { ExpenseComponent } from './admin/expense/expense.component';
 
 const routes: Routes = [
   { path: '', redirectTo: "/admin-login", pathMatch: 'full' },
@@ -44,6 +46,8 @@ const routes: Routes = [
       { path: 'manage-client', component: ManageClientComponent},
       { path: 'project-type', component: ProjectTypeComponent},
       { path: 'client-payment', component: ClientPaymentComponent},
+      { path: 'expense-head', component: ExpenseHeadComponent},
+      { path: 'expense', component: ExpenseComponent},
     ]
   },
   { path: 'page-not-found', component: PageNotFoundComponent },

@@ -275,6 +275,30 @@ export class AppService {
     return this.http.post(this.apiUrl + "Project/deleteProject", obj, { headers: this.headers })
   }
 
+  
+  //Expense
+    saveExpense(obj: any) {
+    return this.http.post(this.apiUrl + "Expense/saveExpense", obj, { headers: this.headers })
+  }
+  ExpenseList(obj: any) {
+    return this.http.post(this.apiUrl + "Expense/ExpenseList", obj, { headers: this.headers })
+  }
+  deleteExpense(obj: any) {
+    return this.http.post(this.apiUrl + "Expense/deleteExpense", obj, { headers: this.headers })
+  }
+
+
+  //ExpenseHead
+    saveExpenseHead(obj: any) {
+    return this.http.post(this.apiUrl + "ExpenseHead/saveExpenseHead", obj, { headers: this.headers })
+  }
+  ExpenseHeadList(obj: any) {
+    return this.http.post(this.apiUrl + "ExpenseHead/ExpenseHeadList", obj, { headers: this.headers })
+  }
+  deleteExpenseHead(obj: any) {
+    return this.http.post(this.apiUrl + "ExpenseHead/deleteExpenseHead", obj, { headers: this.headers })
+  }
+
 
 
 }
