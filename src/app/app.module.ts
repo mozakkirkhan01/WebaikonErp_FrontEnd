@@ -40,6 +40,7 @@ import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerMod
 import { ManageClientComponent } from './admin/manage-client/manage-client.component';
 import { ProjectTypeComponent } from './admin/project-type/project-type.component';
 import { ClientPaymentComponent } from './admin/client-payment/client-payment.component';
+import { ExpenseHeadComponent } from './admin/expense-head/expense-head.component';
 
 @NgModule({
   declarations: [
@@ -69,6 +70,7 @@ import { ClientPaymentComponent } from './admin/client-payment/client-payment.co
     ManageClientComponent,
     ProjectTypeComponent,
     ClientPaymentComponent,
+    ExpenseHeadComponent,
   ],
   imports: [
     BrowserModule,
