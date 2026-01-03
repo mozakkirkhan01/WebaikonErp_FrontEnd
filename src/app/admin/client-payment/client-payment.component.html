@@ -1,1 +1,208 @@
-<p>client-payment works!</p>
+<app-progress *ngIf="dataLoading"></app-progress>
+<main id="main" class="main" *ngIf="action.ResponseReceived">
+
+    <div class="row">
+        <div class="pagetitle dashboard col-sm-8">
+            <h1>{{action.MenuTitle}}</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
+                    <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
+                    <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <button mat-raised-button color="primary" *ngIf="action.CanCreate" class="float-right"
+                data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="resetForm()">New Client Payment</button>
+        </div>
+    </div>
+
+    <section class="section dashboard">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-container overflow-auto">
+                    <div class="dataTable-top">
+                        <div class="dataTable-dropdown d-flex">
+                            <select class="dataTable-selector form-select form-select-sm" [(ngModel)]="itemPerPage">
+                                <option *ngFor="let option of PageSize" [value]="option">{{option}} </option>
+                            </select>
+                            <span class="ms-2">Entries per page</span>
+                        </div>
+                        <div class="dataTable-search">
+                            <input class="dataTable-input form-control form-control-sm" [(ngModel)]="Search"
+                                placeholder="Search..." type="text">
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th style="cursor:pointer;" (click)="sort('ClientId')">Client Company Name</th>
+                                <th style="cursor:pointer;" (click)="sort('ProjectTypeId')">Project Name</th>
+                                <th style="cursor:pointer;" (click)="sort('Description')">Description</th>
+                                <th style="cursor:pointer;" (click)="sort('Amount')">Amount</th>
+                                <th style="cursor:pointer;" (click)="sort('PaymentDate')">Payment Date</th>
+                                <th style="cursor:pointer;" (click)="sort('PaymentMode')">Payment Mode</th>
+                                <th *ngIf="action.CanEdit">Edit</th>
+                                <th *ngIf="action.CanDelete">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let item of clientPaymentList |filter:Search|orderBy:sortKey:reverse|paginate: { itemsPerPage: itemPerPage, currentPage: p } ; ; let i = index;">
+                                <td>{{(itemPerPage * (p -1)) +i+ 1}}</td>
+                                <td>{{item.ClientCompanyName}}</td>
+                                <td>{{item.ProjectTypeName}}</td>
+                                <td>{{item.Description}}</td>
+                                <td>{{item.Amount}}</td>
+                                <td>{{item.PaymentDate}}</td>
+                                <td>{{getPaymentModeName(item.PaymentMode)}}</td>
+                                <td *ngIf="action.CanEdit">
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                        data-bs-target="#staticBackdrop" (click)="editClientPayment(item)">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                </td>
+                                <td *ngIf="action.CanDelete">
+                                    <button class="btn btn-sm btn-danger" (click)="deleteClientPayment(item)">
+                                        <!-- (click)="deleteClientPayment(item)" -->
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="dataTable-bottom">
+                        <pagination-controls (pageChange)="onTableDataChange($event)" style="float:right;"
+                            class="my-pagination"></pagination-controls>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <div class="modal fade" *ngIf="action.CanEdit || action.CanCreate" id="staticBackdrop" data-bs-backdrop="static"
+        data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">{{ClientPayment.ClientPaymentId > 0
+                        ?'Update':'New'}} ClientPayment
+                    </h1>
+                    <button type=" button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="resetForm()"></button>
+                </div>
+                <div class="modal-body">
+
+                    <form #formClientPayment="ngForm" class="d-flex justify-content-evenly flex-wrap">
+                        <div class="container">
+                            <div class="row">
+
+                                <mat-form-field appearance="outline" class="col-md-6 form-group">
+                                    <mat-label>Search By Client Company Name</mat-label>
+                                    <input matInput #ClientId="ngModel" name="ClientId"
+                                        (ngModelChange)="filterClientList($event)"
+                                        placeholder="Search Patient UHID No./Name/Mobile No."
+                                        [(ngModel)]="ClientPayment.ClientCompanyName" [matAutocomplete]="autoClientName"
+                                        required autofocus />
+                                    <mat-autocomplete #autoClientName="matAutocomplete"
+                                        (optionSelected)="onClientSelected($event)">
+                                        <mat-option *ngFor="let option of clientList" [id]="option.ClientId"
+                                            [value]="option.ClientCompanyName">{{ option.ClientCompanyName
+                                            }}</mat-option>
+                                    </mat-autocomplete>
+
+                                    <button mat-icon-button matSuffix *ngIf="ClientPayment.ClientCompanyName"
+                                        color="primary" (click)="clearClientName()">
+                                        <mat-icon>close</mat-icon>
+                                    </button>
+
+                                    <mat-error>Client Name required !!</mat-error>
+                                </mat-form-field>
+
+
+
+                                <!-- ProjectType -->
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Project Type</mat-label>
+
+                                    <mat-select name="ProjectTypeId" [(ngModel)]="ClientPayment.ProjectTypeId"
+                                        #ProjectType="ngModel" required>
+                                        <mat-option *ngFor="let Project of projectList" [value]="Project.ProjectTypeId">
+                                            {{ Project.ProjectTypeName }}
+                                        </mat-option>
+                                    </mat-select>
+
+                                    <mat-error *ngIf="ProjectType.invalid && ProjectType.touched">
+                                        Project Type is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <!-- Description -->
+                                <mat-form-field appearance="outline" class="col-sm-12">
+                                    <mat-label>Description</mat-label>
+                                    <input matInput #Description="ngModel" name="Description"
+                                        [(ngModel)]="ClientPayment.Description" autofocus>
+                                    <mat-error>
+                                        Description is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <!-- Amount -->
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Amount</mat-label>
+                                    <input type="Amount" matInput #Amount="ngModel" name="Amount"
+                                        [(ngModel)]="ClientPayment.Amount">
+                                    <mat-error>
+                                        Amount required !!
+                                    </mat-error>
+                                </mat-form-field>
+
+
+                                <!-- Payment date -->
+                                <mat-form-field appearance="outline" class="col-sm-6 form-group">
+                                    <mat-label>Payment Date</mat-label>
+                                    <input matInput #PaymentDate="ngModel" name="PaymentDate"
+                                        [(ngModel)]="ClientPayment.PaymentDate" required
+                                        [matDatepicker]="JoinDatePicker">
+                                    <mat-datepicker-toggle matIconSuffix [for]="JoinDatePicker"></mat-datepicker-toggle>
+                                    <mat-datepicker #JoinDatePicker></mat-datepicker>
+                                    <mat-error
+                                        *ngIf="(PaymentDate.dirty  || PaymentDate.touched) || (PaymentDate.invalid && isSubmitted)">
+                                        Payment Date is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <!-- PaymentMode -->
+                                <mat-form-field appearance="outline" class="col-sm-6 form-group">
+                                    <mat-label>Payment Mode</mat-label>
+                                    <mat-select name="PaymentMode" [(ngModel)]="ClientPayment.PaymentMode">
+                                        <mat-option *ngFor="let mode of PaymentModeList" [value]="mode.Key">
+                                            {{ mode.Value }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" mat-raised-button color="warn" class="me-2" data-bs-dismiss="modal"
+                        (click)="resetForm()">Cancel</button>
+
+                    <button mat-raised-button color="primary"
+                        (click)="saveClientPayment()">{{ClientPayment.ClientPaymentId >
+                        0 ? 'Update':'Submit'}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
