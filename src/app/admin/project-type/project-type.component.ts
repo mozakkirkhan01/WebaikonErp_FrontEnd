@@ -19,7 +19,7 @@ declare var bootstrap: any;
 })
 export class ProjectTypeComponent {
 
-  dataLoading: boolean = false
+    dataLoading: boolean = false
     projectList: any = []
     Project: any = {}
     isSubmitted = false
