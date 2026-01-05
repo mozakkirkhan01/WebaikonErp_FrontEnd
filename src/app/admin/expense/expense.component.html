@@ -1,1 +1,188 @@
-<p>expense works!</p>
+<app-progress *ngIf="dataLoading"></app-progress>
+<main id="main" class="main" *ngIf="action.ResponseReceived">
+
+    <div class="row">
+        <div class="pagetitle dashboard col-sm-8">
+            <h1>{{action.MenuTitle}}</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
+                    <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
+                    <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <button mat-raised-button color="primary" *ngIf="action.CanCreate" class="float-right"
+                data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="resetForm()">New Expense</button>
+        </div>
+    </div>
+
+    <section class="section dashboard">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-container overflow-auto">
+                    <div class="dataTable-top">
+                        <div class="dataTable-dropdown d-flex">
+                            <select class="dataTable-selector form-select form-select-sm" [(ngModel)]="itemPerPage">
+                                <option *ngFor="let option of PageSize" [value]="option">{{option}} </option>
+                            </select>
+                            <span class="ms-2">Entries per page</span>
+                        </div>
+                        <div class="dataTable-search">
+                            <input class="dataTable-input form-control form-control-sm" [(ngModel)]="Search"
+                                placeholder="Search..." type="text">
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th style="cursor:pointer;" (click)="sort('ExpenseHeadName')">Expense Head Name</th>
+                                <th style="cursor:pointer;" (click)="sort('Description')">Description</th>
+                                <th style="cursor:pointer;" (click)="sort('ExpenseDate')">Expense Date</th>
+                                <th style="cursor:pointer;" (click)="sort('PaymentMode')">Payment Mode</th>
+                                <th style="cursor:pointer;" (click)="sort('Amount')">Amount</th>
+                                <th *ngIf="action.CanEdit">Edit</th>
+                                <th *ngIf="action.CanDelete">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let item of expenseList |filter:Search|orderBy:sortKey:reverse|paginate: { itemsPerPage: itemPerPage, currentPage: p } ; ; let i = index;">
+                                <td>{{(itemPerPage * (p -1)) +i+ 1}}</td>
+                                <td>{{item.ExpenseHeadName}}</td>
+                                <td>{{item.Description}}</td>
+                                <td>{{item.ExpenseDate}}</td>
+                                <td>{{item.PaymentMode}}</td>
+                                <td>{{item.Amount}}</td>
+                                <td *ngIf="action.CanEdit">
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                        data-bs-target="#staticBackdrop" (click)="editExpense(item)">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                </td>
+                                <td *ngIf="action.CanDelete">
+                                    <button class="btn btn-sm btn-danger" (click)="deleteExpense(item)">
+                                        <!-- (click)="deleteExpense(item)" -->
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="dataTable-bottom">
+                        <pagination-controls (pageChange)="onTableDataChange($event)" style="float:right;"
+                            class="my-pagination"></pagination-controls>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <div class="modal fade" *ngIf="action.CanEdit || action.CanCreate" id="staticBackdrop" data-bs-backdrop="static"
+        data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">{{Expense.ExpenseId > 0
+                        ?'Update':'New'}} Expense
+                    </h1>
+                    <button type=" button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="resetFormEdit()"></button>
+                </div>
+                <div class="modal-body">
+
+                    <form #formExpense="ngForm" class="d-flex justify-content-evenly flex-wrap">
+                        <div class="container">
+                            <div class="row">
+                                <!-- Expense Head Name -->
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Expense Head</mat-label>
+
+                                    <mat-select name="ExpenseHeadId" [(ngModel)]="Expense.ExpenseHeadId"
+                                        #ExpenseHeadId="ngModel" required>
+                                        <mat-option *ngFor="let head of expenseHeadList" [value]="head.ExpenseHeadId">
+                                            {{ head.ExpenseHeadName }}
+                                        </mat-option>
+                                    </mat-select>
+
+                                    <mat-error *ngIf="ExpenseHeadId.invalid && ExpenseHeadId.touched">
+                                        Expense Head is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <!-- Expense Description -->
+                                <mat-form-field appearance="outline" class="col-sm-12">
+                                    <mat-label>Expense Description</mat-label>
+                                    <textarea matInput #Description="ngModel" name="Description"
+                                        [(ngModel)]="Expense.Description" rows="4" required autofocus>
+                                    </textarea>
+                                    <mat-error>
+                                        Expense Description is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                
+                                <!-- Amount -->
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Amount</mat-label>
+                                    <input type="number" matInput #Amount="ngModel" name="Amount"
+                                        [(ngModel)]="Expense.Amount">
+                                    <mat-error>
+                                        Amount required !!
+                                    </mat-error>
+                                </mat-form-field>
+
+
+                                <!-- PaymentMode -->
+                                <mat-form-field appearance="outline" class="col-sm-6 form-group">
+                                    <mat-label>Payment Mode</mat-label>
+                                    <mat-select name="PaymentMode" [(ngModel)]="Expense.PaymentMode">
+                                        <mat-option *ngFor="let mode of PaymentModeList" [value]="mode.Key">
+                                            {{ mode.Value }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+
+                                <!-- ExpenseDate date -->
+                                <mat-form-field appearance="outline" class="col-sm-6 form-group">
+                                    <mat-label>Expense Date</mat-label>
+
+                                    <input matInput #ExpenseDate="ngModel" name="ExpenseDate"
+                                        [(ngModel)]="Expense.ExpenseDate" required [matDatepicker]="JoinDatePicker"
+                                        [max]="maxDate">
+
+                                    <mat-datepicker-toggle matIconSuffix [for]="JoinDatePicker"></mat-datepicker-toggle>
+                                    <mat-datepicker #JoinDatePicker></mat-datepicker>
+
+                                    <mat-error
+                                        *ngIf="(ExpenseDate.dirty || ExpenseDate.touched) || (ExpenseDate.invalid && isSubmitted)">
+                                        Expense Date is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" mat-raised-button color="warn" class="me-2" data-bs-dismiss="modal"
+                        (click)="resetFormEdit()">Cancel</button>
+
+                    <button mat-raised-button color="primary" (click)="saveExpense()">{{Expense.ExpenseId >
+                        0 ? 'Update':'Submit'}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</main>
