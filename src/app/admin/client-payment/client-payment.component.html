@@ -120,7 +120,7 @@
                                     <button mat-icon-button matSuffix *ngIf="ClientPayment.ClientCompanyName"
                                         color="primary" (click)="clearClientName()">
                                         <mat-icon>close</mat-icon>
-                                    </button>
+                                    </button>   
 
                                     <mat-error>Client Name required !!</mat-error>
                                 </mat-form-field>
@@ -156,7 +156,7 @@
                                 <!-- Amount -->
                                 <mat-form-field appearance="outline" class="col-sm-6">
                                     <mat-label>Amount</mat-label>
-                                    <input type="Amount" matInput #Amount="ngModel" name="Amount"
+                                    <input type="number" matInput #Amount="ngModel" name="Amount"
                                         [(ngModel)]="ClientPayment.Amount">
                                     <mat-error>
                                         Amount required !!
