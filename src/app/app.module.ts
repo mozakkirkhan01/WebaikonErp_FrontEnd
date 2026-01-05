@@ -42,6 +42,7 @@ import { ProjectTypeComponent } from './admin/project-type/project-type.componen
 import { ClientPaymentComponent } from './admin/client-payment/client-payment.component';
 import { ExpenseHeadComponent } from './admin/expense-head/expense-head.component';
 import { ExpenseComponent } from './admin/expense/expense.component';
+import { ClientRenewalComponent } from './admin/client-renewal/client-renewal.component';
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import { ExpenseComponent } from './admin/expense/expense.component';
     ClientPaymentComponent,
     ExpenseHeadComponent,
     ExpenseComponent,
+    ClientRenewalComponent,
   ],
   imports: [
     BrowserModule,
