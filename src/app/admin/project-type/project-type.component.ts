@@ -45,7 +45,7 @@ export class ProjectTypeComponent {
       this.staffLogin = this.localService.getEmployeeDetail();
       this.validiateMenu();
       this.ProjectList();
-      this.resetForm();
+      // this.resetForm();
     }
   
     validiateMenu() {
@@ -196,9 +196,9 @@ export class ProjectTypeComponent {
     }
   
     // edit
-      editProject(obj: any) {
-      this.resetForm()
-      this.Project = obj
-    }
+      editProject(item: any) {
+    this.Project = { ...item }; // clone object
+
+  }
 
 }

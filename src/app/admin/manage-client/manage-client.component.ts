@@ -97,7 +97,8 @@ export class ManageClientComponent {
     if (this.formClient.invalid) {
       this.toastr.error("Fill all the required fields !!")
       return
-    }
+    }    
+    this.Client.CreatedBy = this.staffLogin.StaffLoginId;
     var obj: RequestModel = {
       request: this.localService.encrypt(JSON.stringify(this.Client)).toString()
     }
@@ -217,7 +218,6 @@ ClientList() {
 
   // edit
     editClient(obj: any) {
-    this.resetForm()
     this.Client = obj
   }
 

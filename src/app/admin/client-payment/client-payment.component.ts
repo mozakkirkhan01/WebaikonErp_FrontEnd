@@ -47,7 +47,7 @@ export class ClientPaymentComponent {
     this.validiateMenu();
     this.ProjectList();
     this.ClientPaymentList();
-    this.resetForm();
+    // this.resetForm();
     this.ClientList();
   }
 
@@ -102,6 +102,8 @@ export class ClientPaymentComponent {
       this.toastr.error("Fill all the required fields !!")
       return
     }
+    this.ClientPayment.CreatedBy = this.staffLogin.StaffLoginId;
+
     var obj: RequestModel = {
       request: this.localService.encrypt(JSON.stringify(this.ClientPayment)).toString()
     }
@@ -186,9 +188,10 @@ export class ClientPaymentComponent {
   }
 
   // edit
-  editClientPayment(obj: any) {
-    this.resetForm()
-    this.ClientPayment = obj
+
+    editClientPayment(item: any) {
+    this.ClientPayment = { ...item }; // clone object
+
   }
     projectList: any = []
   // Project list

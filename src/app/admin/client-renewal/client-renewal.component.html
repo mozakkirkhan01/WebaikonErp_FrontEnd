@@ -1,1 +1,243 @@
-<p>client-renewal works!</p>
+<app-progress *ngIf="dataLoading"></app-progress>
+<main id="main" class="main" *ngIf="action.ResponseReceived">
+
+    <div class="row">
+        <div class="pagetitle dashboard col-sm-8">
+            <h1>{{action.MenuTitle}}</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="admin/admin-dashboard">Home</a></li>
+                    <li class="breadcrumb-item">{{action.ParentMenuTitle}}</li>
+                    <li class="breadcrumb-item active">{{action.MenuTitle}}</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-sm-4 mb-3">
+            <button mat-raised-button color="primary" *ngIf="action.CanCreate" class="float-right"
+                data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="resetForm()">New Client
+                Renewal</button>
+        </div>
+    </div>
+
+    <section class="section dashboard">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-container overflow-auto">
+                    <div class="dataTable-top">
+                        <div class="dataTable-dropdown d-flex">
+                            <select class="dataTable-selector form-select form-select-sm" [(ngModel)]="itemPerPage">
+                                <option *ngFor="let option of PageSize" [value]="option">{{option}} </option>
+                            </select>
+                            <span class="ms-2">Entries per page</span>
+                        </div>
+                        <div class="dataTable-search">
+                            <input class="dataTable-input form-control form-control-sm" [(ngModel)]="Search"
+                                placeholder="Search..." type="text">
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th style="cursor:pointer;" (click)="sort('ClientCompanyName')">Client Company Name</th>
+                                <th style="cursor:pointer;" (click)="sort('ProjectTypeName')">Project Type Name</th>
+                                <th style="cursor:pointer;" (click)="sort('ProjectName')">Project Name</th>
+                                <th style="cursor:pointer;" (click)="sort('RenewalAmount')">Renewal Amount</th>
+                                <th style="cursor:pointer;" (click)="sort('Description')">Description</th>
+                                <th style="cursor:pointer;" (click)="sort('RenewalDate')">Renewal Date</th>
+                                <th *ngIf="action.CanEdit">Edit</th>
+                                <th *ngIf="action.CanDelete">Delete</th>
+                                <th style="cursor:pointer;" (click)="sort('Status')">RenewalStatus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let item of clientRenewalList |filter:Search|orderBy:sortKey:reverse|paginate: { itemsPerPage: itemPerPage, currentPage: p } ; ; let i = index;">
+                                <td>{{(itemPerPage * (p -1)) +i+ 1}}</td>
+                                <td>{{item.ClientCompanyName}}</td>
+                                <td>{{item.ProjectTypeName}}</td>
+                                <td>{{item.ProjectName}}</td>
+                                <td>{{item.RenewalAmount}}</td>
+                                <td>{{item.Description}}</td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="item.RenewalDate && !item.RenewalDate.startsWith('0001'); else noDate">
+                                        {{ item.RenewalDate | date:'dd/MM/yyyy' }}
+                                    </ng-container>
+
+                                    <ng-template #noDate>
+                                        <span class="text-muted">Not Set</span>
+                                    </ng-template>
+                                </td>
+
+                                <!-- <td>{{ formatDate(item.RenewalDate) }}</td> -->
+                                <td *ngIf="action.CanEdit">
+                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                        data-bs-target="#staticBackdrop" (click)="editClientRenewal(item)">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                </td>
+                                <td *ngIf="action.CanDelete">
+                                    <button class="btn btn-sm btn-danger" (click)="deleteClientRenewal(item)">
+                                        <!-- (click)="deleteClientRenewal(item)" -->
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </td>
+                                <td>
+                                    <span class="p-1" [ngClass]="getStatusClass(item.RenewalStatus)">
+                                        {{ getStatusText(item.RenewalStatus) }}
+                                    </span>
+                                </td>
+
+
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="dataTable-bottom">
+                        <pagination-controls (pageChange)="onTableDataChange($event)" style="float:right;"
+                            class="my-pagination"></pagination-controls>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <div class="modal fade" *ngIf="action.CanEdit || action.CanCreate" id="staticBackdrop" data-bs-backdrop="static"
+        data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">{{ClientRenewal.ClientRenewalId > 0
+                        ?'Update':'New'}} Client Renewal
+                    </h1>
+                    <button type=" button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        (click)="resetForm()"></button>
+                </div>
+                <div class="modal-body">
+
+                    <form #formClientRenewal="ngForm" class="d-flex justify-content-evenly flex-wrap">
+                        <div class="container">
+                            <div class="row">
+                                <!-- Client Company Name -->
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Client Company Name</mat-label>
+
+                                    <input type="text" matInput name="ClientCompany"
+                                        [(ngModel)]="ClientRenewal.ClientCompanyName" [matAutocomplete]="autoClient"
+                                        (focus)="showAllClients()" (ngModelChange)="filterClient($event)" required
+                                        #ClientCompany="ngModel" />
+
+                                    <mat-autocomplete #autoClient="matAutocomplete"
+                                        (optionSelected)="onClientSelected($event)">
+                                        <mat-option *ngFor="let client of filteredClientList"
+                                            [value]="client.ClientCompanyName">
+                                            {{ client.ClientCompanyName }}
+                                        </mat-option>
+                                    </mat-autocomplete>
+
+                                    <mat-error *ngIf="ClientCompany.invalid && ClientCompany.touched">
+                                        Client Company Name is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <!-- Project Type Name Name -->
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Project Type Name</mat-label>
+
+                                    <mat-select name="ProjectTypeId" [(ngModel)]="ClientRenewal.ProjectTypeId"
+                                        #ProjectTypeId="ngModel" required>
+                                        <mat-option *ngFor="let head of projectList" [value]="head.ProjectTypeId">
+                                            {{ head.ProjectTypeName }}
+                                        </mat-option>
+                                    </mat-select>
+
+                                    <mat-error *ngIf="ProjectTypeId.invalid && ProjectTypeId.touched">
+                                        ClientRenewal Head is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+
+                                <!-- ProjectName -->
+                                <mat-form-field appearance="outline" class="col-sm-12">
+                                    <mat-label>Project Name</mat-label>
+                                    <input matInput #ProjectName="ngModel" name="ProjectName"
+                                        [(ngModel)]="ClientRenewal.ProjectName" required autofocus>
+                                    <mat-error>
+                                        Project Name is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <!-- ClientRenewal Description -->
+                                <mat-form-field appearance="outline" class="col-sm-12">
+                                    <mat-label>Description</mat-label>
+                                    <textarea matInput #Description="ngModel" name="Description"
+                                        [(ngModel)]="ClientRenewal.Description" rows="4" required autofocus>
+                                    </textarea>
+                                    <mat-error>
+                                        ClientRenewal Description is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <!-- RenewalAmount -->
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Renewal Amount</mat-label>
+                                    <input type="number" matInput #RenewalAmount="ngModel" name="RenewalAmount"
+                                        [(ngModel)]="ClientRenewal.RenewalAmount">
+                                    <mat-error>
+                                        Renewal Amount required !!
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <!-- Renewal Date date -->
+                                <mat-form-field appearance="outline" class="col-sm-6 form-group">
+                                    <mat-label>Client Renewal Date</mat-label>
+
+                                    <input matInput #ClientRenewalDate="ngModel" name="ClientRenewalDate"
+                                        [(ngModel)]="ClientRenewal.RenewalDate" required
+                                        [matDatepicker]="JoinDatePicker" [max]="maxDate">
+
+                                    <mat-datepicker-toggle matIconSuffix [for]="JoinDatePicker"></mat-datepicker-toggle>
+                                    <mat-datepicker #JoinDatePicker></mat-datepicker>
+
+                                    <mat-error
+                                        *ngIf="(ClientRenewalDate.dirty || ClientRenewalDate.touched) || (ClientRenewalDate.invalid && isSubmitted)">
+                                        ClientRenewal Date is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+
+
+
+
+                                <!-- RenewalStatus -->
+                                <mat-form-field appearance="outline" class="col-sm-6">
+                                    <mat-label>Renewal Status</mat-label>
+                                    <mat-select #RenewalStatus="ngModel" name="RenewalStatus"
+                                        [(ngModel)]="ClientRenewal.RenewalStatus" required>
+                                        <mat-option [value]="status.Key"
+                                            *ngFor="let status of RenewalStatusList">{{status.Value}}</mat-option>
+                                    </mat-select>
+                                    <mat-error>
+                                        Status is <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" mat-raised-button color="warn" class="me-2" data-bs-dismiss="modal"
+                        (click)="resetForm()">Cancel</button>
+
+                    <button mat-raised-button color="primary"
+                        (click)="saveClientRenewal()">{{ClientRenewal.ClientRenewalId >
+                        0 ? 'Update':'Submit'}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
