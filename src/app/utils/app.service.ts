@@ -251,7 +251,8 @@ export class AppService {
     return this.http.post(this.apiUrl + "Client/deleteClient", obj, { headers: this.headers })
   }
 
-
+  
+  
   //Cleint-Payment
   saveClientPayment(obj: any) {
     return this.http.post(this.apiUrl + "ClientPayment/saveClientPayment", obj, { headers: this.headers })
@@ -261,6 +262,17 @@ export class AppService {
   }
   deleteClientPayment(obj: any) {
     return this.http.post(this.apiUrl + "ClientPayment/deleteClientPayment", obj, { headers: this.headers })
+  }
+  
+  //Cleint-Renewal
+  saveClientRenewal(obj: any) {
+    return this.http.post(this.apiUrl + "ClientRenewal/saveClientRenewal", obj, { headers: this.headers })
+  }
+  ClientRenewalList(obj: any) {
+    return this.http.post(this.apiUrl + "ClientRenewal/ClientRenewalList", obj, { headers: this.headers })
+  }
+  deleteClientRenewal(obj: any) {
+    return this.http.post(this.apiUrl + "ClientRenewal/deleteClientRenewal", obj, { headers: this.headers })
   }
   
   
